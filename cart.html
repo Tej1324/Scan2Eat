@@ -62,7 +62,8 @@
       localStorage.setItem("orders", JSON.stringify(allOrders));
       localStorage.removeItem("cart");
       alert("Order placed successfully!");
-      window.location.href = `menu.html?table=${tableId}`;
+      const basePath = window.location.pathname.split("/")[1];
+      window.location.href = `/${basePath}/menu.html?table=${tableId}`;
     }
   </script>
 </body>
