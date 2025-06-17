@@ -13,6 +13,7 @@
   </main>
 
   <script>
+    const basePath = window.location.pathname.split("/")[1]; // useful for future navigation if needed
     const orders = JSON.parse(localStorage.getItem("orders")) || {};
     const ordersDiv = document.getElementById("orders");
 
