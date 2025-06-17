@@ -21,10 +21,21 @@
 
   <div class="fixed bottom-0 left-0 right-0 bg-white shadow-inner py-4 px-6 flex justify-between items-center">
     <p class="text-sm text-gray-600">Ready to place your order?</p>
-    <button onclick="goToCart()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">🛒 Review Cart</button>
+    <button onclick="goToCart()" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">
+      🛒 Review Cart
+    </button>
   </div>
 
   <script>
+    const basePath = window.location.pathname.split("/")[1];
+    const tableId = new URLSearchParams(window.location.search).get("table") || "?";
+    document.getElementById("tableId").innerText = tableId;
+
+    if (tableId === "?") {
+      alert("Invalid or missing table ID. Redirecting...");
+      window.location.href = `/${basePath}/`;
+    }
+
     const menuItems = [
       { id: 1, name: "Paneer Butter Masala", price: 180, emoji: "🧀" },
       { id: 2, name: "Chicken Biryani", price: 220, emoji: "🍗" },
@@ -33,9 +44,6 @@
       { id: 5, name: "Cold Coffee", price: 60, emoji: "🥤" },
       { id: 6, name: "Veg Manchurian", price: 150, emoji: "🥦" }
     ];
-
-    const tableId = new URLSearchParams(window.location.search).get("table") || "?";
-    document.getElementById("tableId").innerText = tableId;
 
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
     const menuDiv = document.getElementById("menu");
@@ -47,7 +55,7 @@
         <div class="p-4">
           <h3 class="text-lg font-bold text-gray-800 mb-1">${item.emoji} ${item.name}</h3>
           <p class="text-gray-600 text-sm mb-3">₹${item.price}</p>
-          <textarea id="spec-${item.id}" placeholder="Any specifications?" class="w-full p-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-400 resize-none" rows="2"></textarea>
+          <textarea id="spec-${item.id}" placeholder="Any specifications?" maxlength="100" class="w-full p-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-400 resize-none" rows="2"></textarea>
         </div>
         <div class="bg-gray-100 p-4">
           <button onclick="addToCart(${item.id})" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition">Add to Cart</button>
@@ -58,16 +66,38 @@
 
     function addToCart(id) {
       const item = menuItems.find(i => i.id === id);
-      const spec = document.getElementById(`spec-${id}`).value.trim();
+      const spec = document.getElementById(`spec-${id}`).value.trim().slice(0, 100);
+      const existingIndex = cart.findIndex(i => i.id === id && i.spec === spec);
+
+      if (existingIndex !== -1) {
+        alert("Item with same specifications already in cart.");
+        return;
+      }
+
       cart.push({ ...item, spec });
       localStorage.setItem("cart", JSON.stringify(cart));
       alert(`${item.name} added to cart.`);
+      updateCartBadge();
     }
 
     function goToCart() {
-      const basePath = window.location.pathname.split("/")[1];
       window.location.href = `/${basePath}/cart.html?table=${tableId}`;
     }
+
+    function updateCartBadge() {
+      const button = document.querySelector("button");
+      button.querySelector("span")?.remove(); // Remove old badge if any
+      const count = cart.length;
+      if (count > 0) {
+        const badge = document.createElement("span");
+        badge.textContent = `(${count})`;
+        badge.className = "ml-2 text-white text-sm";
+        button.appendChild(badge);
+      }
+    }
+
+    // Initialize cart badge on load
+    updateCartBadge();
   </script>
 </body>
 </html>
