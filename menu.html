@@ -27,13 +27,12 @@
   </div>
 
   <script>
-    const basePath = window.location.pathname.split("/")[1];
     const params = new URLSearchParams(window.location.search);
     const tableId = params.get("table");
 
     if (!tableId || isNaN(tableId) || parseInt(tableId) <= 0) {
       alert("Invalid or missing table ID. Redirecting...");
-      window.location.href = `/${basePath}/`;
+      window.location.href = `index.html`;  // ✅ Use relative redirect
     } else {
       document.getElementById("tableId").innerText = tableId;
     }
@@ -83,12 +82,12 @@
     }
 
     function goToCart() {
-      window.location.href = `/${basePath}/cart.html?table=${tableId}`;
+      window.location.href = `cart.html?table=${tableId}`; // ✅ relative path
     }
 
     function updateCartBadge() {
       const button = document.querySelector("button");
-      button.querySelector("span")?.remove(); // Remove old badge if any
+      button.querySelector("span")?.remove();
       const count = cart.length;
       if (count > 0) {
         const badge = document.createElement("span");
@@ -98,7 +97,6 @@
       }
     }
 
-    // Initialize cart badge on load
     updateCartBadge();
   </script>
 </body>
