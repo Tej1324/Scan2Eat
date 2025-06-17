@@ -28,12 +28,14 @@
 
   <script>
     const basePath = window.location.pathname.split("/")[1];
-    const tableId = new URLSearchParams(window.location.search).get("table") || "?";
-    document.getElementById("tableId").innerText = tableId;
+    const params = new URLSearchParams(window.location.search);
+    const tableId = params.get("table");
 
-    if (tableId === "?") {
+    if (!tableId || isNaN(tableId) || parseInt(tableId) <= 0) {
       alert("Invalid or missing table ID. Redirecting...");
       window.location.href = `/${basePath}/`;
+    } else {
+      document.getElementById("tableId").innerText = tableId;
     }
 
     const menuItems = [
